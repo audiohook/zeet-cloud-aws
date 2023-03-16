@@ -129,7 +129,7 @@ resource "aws_eks_addon" "eks_addon_csi" {
 
 locals {
   worker_templates_cpu = { for k, v in {
-    "audiohook-bidder-dedicated" : {
+    "audiohook-bidder-dedi" : {
       instance_type = ["c5a.2xlarge"]
       desired_size = 3
       min_size = 3
