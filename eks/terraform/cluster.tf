@@ -122,18 +122,18 @@ locals {
 }
 
 resource "aws_eks_addon" "eks_addon_csi" {
-  cluster_name = module.eks.cluster_id
+  cluster_name             = module.eks.cluster_id
   service_account_role_arn = local.iam_ebs-csi_role_arn
-  addon_name   = "aws-ebs-csi-driver"
+  addon_name               = "aws-ebs-csi-driver"
 }
 
 locals {
   worker_templates_cpu = { for k, v in {
     "audiohook-bidder-dedi" : {
-      instance_type = ["c5a.2xlarge"]
-      desired_size = 3
-      min_size = 3
-      max_size = 3
+      instance_types = ["t3.xlarge", "t3a.xlarge"]
+      desired_size   = 3
+      min_size       = 3
+      max_size       = 3
 
       # keep in one az to keep pvcs simple for now
       subnet_ids = [sort(module.vpc.private_subnets)[1]]
@@ -144,8 +144,8 @@ locals {
 
       taints = [
         {
-          key = "audiohook.com/application"
-          value = "bidder"
+          key    = "audiohook.com/application"
+          value  = "bidder"
           effect = "NO_SCHEDULE"
         }
       ]
@@ -300,28 +300,28 @@ locals {
         }
       ]
     }
-  } : k => merge({
-    name                = k
-    key_name            = aws_key_pair.ssh.key_name
-    desired_size        = 0
-    min_size            = 0
-    max_size            = 20
-    autoscaling_enabled = true
+    } : k => merge({
+      name                = k
+      key_name            = aws_key_pair.ssh.key_name
+      desired_size        = 0
+      min_size            = 0
+      max_size            = 20
+      autoscaling_enabled = true
 
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size           = 50
-          volume_type           = "gp2"
-          delete_on_termination = true
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 50
+            volume_type           = "gp2"
+            delete_on_termination = true
+          }
         }
       }
-    }
 
-    subnet_ids             = [sort(module.vpc.public_subnets)[0]]
-    vpc_security_group_ids = [aws_security_group.worker_public.id]
-  }, v)
+      subnet_ids             = [sort(module.vpc.public_subnets)[0]]
+      vpc_security_group_ids = [aws_security_group.worker_public.id]
+    }, v)
   }
 
   worker_templates_gpu = var.enable_gpu ? {
@@ -344,7 +344,7 @@ locals {
 
       subnet_ids             = [sort(module.vpc.public_subnets)[0]]
       vpc_security_group_ids = [aws_security_group.worker_public.id]
-    }, {
+      }, {
       name          = "g4dn-xlarge-dedicated"
       instance_type = "g4dn.xlarge"
       ami_id        = data.aws_ami.eks_gpu.id
@@ -403,19 +403,19 @@ locals {
         key                 = "k8s.io/cluster-autoscaler/node-template/label/${k}"
         propagate_at_launch = false
         value               = v
-      }], [{
-      id                  = join("-", [n, "autoscaling-storage"])
-      name                = n
-      key                 = "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage"
-      propagate_at_launch = false
-      value               = "50Gi"
-    }, {
-      id                  = join("-", [n, "autoscaling-enabled"])
-      name                = n
-      key                 = "k8s.io/cluster-autoscaler/enabled"
-      propagate_at_launch = true
-      value               = tostring(i.autoscaling_enabled)
-    }]
+        }], [{
+        id                  = join("-", [n, "autoscaling-storage"])
+        name                = n
+        key                 = "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage"
+        propagate_at_launch = false
+        value               = "50Gi"
+        }, {
+        id                  = join("-", [n, "autoscaling-enabled"])
+        name                = n
+        key                 = "k8s.io/cluster-autoscaler/enabled"
+        propagate_at_launch = true
+        value               = tostring(i.autoscaling_enabled)
+      }]
     )
   ])
 
@@ -427,13 +427,13 @@ locals {
         key                 = "k8s.io/cluster-autoscaler/node-template/label/${k}"
         propagate_at_launch = false
         value               = v
-      }], [{
-      id                  = join("-", [n, "autoscaling-enabled"])
-      name                = n
-      key                 = "k8s.io/cluster-autoscaler/enabled"
-      propagate_at_launch = true
-      value               = "true"
-    },
+        }], [{
+        id                  = join("-", [n, "autoscaling-enabled"])
+        name                = n
+        key                 = "k8s.io/cluster-autoscaler/enabled"
+        propagate_at_launch = true
+        value               = "true"
+      },
       {
         id                  = join("-", [n, "autoscaling-owner"])
         name                = n
