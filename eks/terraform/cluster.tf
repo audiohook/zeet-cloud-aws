@@ -234,6 +234,22 @@ locals {
         }
       ]
     }
+    "c5-2xlarge-guran" : {
+      instance_types = ["c5.2xlarge"]
+      capacity_type  = "SPOT"
+
+      labels = {
+        "zeet.co/dedicated" = "guaranteed"
+      }
+
+      taints = [
+        {
+          key    = "zeet.co/dedicated"
+          value  = "guaranteed"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    }
     "m5-large-shared" : {
       instance_types = ["m5.large"]
       capacity_type  = "SPOT"
