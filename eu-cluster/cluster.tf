@@ -130,7 +130,7 @@ resource "aws_eks_addon" "eks_addon_csi" {
 locals {
   worker_templates_cpu = { for k, v in {
     "audiohook-bidder-dedi" : {
-      instance_types = ["t3.2xlarge", "t3a.2xlarge"]
+      instance_types = ["m"]
       desired_size   = 3
       min_size       = 3
       max_size       = 3
@@ -214,6 +214,22 @@ locals {
         {
           key    = "zeet.co/dedicated"
           value  = "dedicated"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    }
+    "2xlarge-guran" : {
+      instance_types = ["	m6a.2xlarge", "c5.2xlarge"]
+      capacity_type  = "SPOT"
+
+      labels = {
+        "zeet.co/dedicated" = "guaranteed"
+      }
+
+      taints = [
+        {
+          key    = "zeet.co/dedicated"
+          value  = "guaranteed"
           effect = "NO_SCHEDULE"
         }
       ]
