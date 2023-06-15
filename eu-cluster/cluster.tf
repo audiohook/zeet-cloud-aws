@@ -244,7 +244,7 @@ locals {
       ]
     }
     "2xlarge-guran" : {
-      instance_types = ["	m6a.2xlarge", "c5.2xlarge"]
+      instance_types = ["m6a.2xlarge", "c5.2xlarge"]
       capacity_type  = "SPOT"
 
       labels = {
