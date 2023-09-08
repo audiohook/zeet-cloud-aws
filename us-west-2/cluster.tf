@@ -129,6 +129,27 @@ resource "aws_eks_addon" "eks_addon_csi" {
 
 locals {
   worker_templates_cpu = { for k, v in {
+    "audiohook-bidder-dedi" : {
+      instance_types = ["m5n.2xlarge"]
+      desired_size   = 3
+      min_size       = 3
+      max_size       = 3
+
+      # keep in one az to keep pvcs simple for now
+      subnet_ids = [sort(module.vpc.private_subnets)[1]]
+
+      labels = {
+        "audiohook.com/application" = "bidder"
+      }
+
+      taints = [
+        {
+          key    = "audiohook.com/application"
+          value  = "bidder"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    },
     "m5-large-system" : {
       instance_types = ["m5.large"]
       desired_size   = 1
