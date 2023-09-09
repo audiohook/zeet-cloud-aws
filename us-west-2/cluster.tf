@@ -159,6 +159,22 @@ locals {
         }
       ]
     },
+    "c5-2xlarge-guran" : {
+      instance_types = ["c5.2xlarge", "m6a.2xlarge", "c5a.2xlarge", "m5.2xlarge", "m6a.4xlarge", "c5.4xlarge", "c5a.4xlarge", "c6a.4xlarge", "c6a.2xlarge"]
+      capacity_type  = "SPOT"
+
+      labels = {
+        "zeet.co/dedicated" = "guaranteed"
+      }
+
+      taints = [
+        {
+          key    = "zeet.co/dedicated"
+          value  = "guaranteed"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    }
     "m5-large-system" : {
       instance_types = ["m5.large"]
       desired_size   = 1
